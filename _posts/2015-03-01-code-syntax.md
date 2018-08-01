@@ -5,7 +5,6 @@ To insert highlight code inside of a post, it's enough to use some specific tags
 
 This is a CSS example:
 ```css
-
 body {
   background-color: #fff;
   }
@@ -14,21 +13,17 @@ h1 {
   color: #ffaa33;
   font-size: 1.5em;
   }
-
 ```
 
 And this is a HTML example, with a linenumber:
 ```html
-
 <html>
   <a href="example.com">Example</a>
 </html>
-
 ```
 
 Last, a Ruby example:
 ```ruby
-
 def hello
   puts "Hello World!"
 end
