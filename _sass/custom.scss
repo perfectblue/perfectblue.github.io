@@ -10,3 +10,41 @@ pre.highlight {
 .rouge-code {
   padding-left: 10px;
 }
+
+code.highlighter-rouge {
+  background-color: #dfe3ee;
+  color: #586e75;
+  overflow-wrap: break-word;
+}
+
+.gl {
+  color: #ccc;
+
+  /* Stop line numbers being visually selected */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+html, body, #wrap {
+  height: 100%;
+}
+
+#header {
+  height: 239px;
+}
+
+footer {
+  height: 51px;
+}
+
+#container {
+  min-height: calc(100% - 239px - 51px);
+}
+
+#post-page > h1 {
+  text-align: center;
+}
