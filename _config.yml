@@ -48,6 +48,7 @@ defaults:
 # Plugins
 gems:
   - jekyll-paginate
+  - jekyll-seo-tag
 
 # Custom variables
 version: "1.1.0"
