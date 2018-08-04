@@ -25,6 +25,6 @@ And this is a HTML example, with a linenumber:
 Last, a Ruby example:
 ```ruby
 def hello
-  puts "Hello World!"
+  puts "Hello World!" if member.ctfs_played.first.id == CTF.all.first.id
 end
 ```
