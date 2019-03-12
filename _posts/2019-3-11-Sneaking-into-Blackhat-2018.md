@@ -15,7 +15,7 @@ Now...everyone knows DEFCON is a scam, but at least tickets are affordable. Blac
 
 It was Day 0 of Black Hat, and we had no badge. So what did we do?
 As it turned out, we had a friend at h1-702 who was willing to lend us his legitimate badge. He himself was lucky enough to have a student pass.
-Being the creative h`a`c`k`e`r`s we were, we made use of the limited resources we had available to us at the Aria.
+Being the creative hAcKeRs we were, we made use of the limited resources we had available to us at the Aria.
 
  - 1 (one) ziploc bag, originally filled with protein powder
 ![ziploc]({{ "assets/images/blackhat/ziploc.png" }})
