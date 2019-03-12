@@ -50,7 +50,7 @@ Instead, we opted to sneak in using a Layer 0 backdoor.
 
 ![layer 0 attacks]({{ "assets/images/blackhat/lol.png" }})
 
-And that's how we snuck on Day 0 at Black Hat 2018!
-On later days, we were fortunate enough to get another legitimate student badge, so we were able to attend the talks unimpeded.
+And that's how we snuck on Day 0 at Black Hat 2018!. There wasn't much going on, so we were in and out in 15 minutes
+On the next day, we finally had our student badges ready, so we were able to attend the talks unimpeded.
 There's so much that I left out here that I didn't get to cover, such as the great time we had at h1-702.
 But that's a story for another time... :) That's all folks.
