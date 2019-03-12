@@ -9,7 +9,7 @@ With DEFCON qualifiers  coming up again, I ([cts](https://github.com/rollsafe)) 
 
 Though we missed qualifying for DEFCON finals (by 1 place!), we were nevertheless generously invited by Hackerone to their h1-702 event, and luckily for us Black Hat 2018 and DEFCON happened to coincide!
 
-Now...everyone knows DEFCON is a scam, but at least tickets are affordable. Black Hat tickets are $2000 and up (!!!!), basically unaffordable for broke students like us.
+Now...everyone knows DEFCON is a scam, but at least tickets are affordable. Black Hat tickets are $2000 and up (!!!!), out of the range for students like us.
 
 ![ludicrous prices]({{ "assets/images/blackhat/seize the memes of production.png" }})
 
