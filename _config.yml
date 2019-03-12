@@ -1,11 +1,11 @@
 # Site settings
 title: Perfect Blue | Writeups
 description: "Writeups and posts by the team Perfect Blue"
-url: "http://writeups.perfect.blue/"
+url: "http://blog.perfect.blue/"
 author:
   name: "Perfect Blue"
   email: "contact@perfect.blue"
-  url: "http://writeups.perfect.blue/"
+  url: "http://blog.perfect.blue/"
 
 # Build settings
 baseurl: / # Change this to your relative path (ex: /blog/), or leave just a /
