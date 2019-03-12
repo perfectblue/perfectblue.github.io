@@ -37,7 +37,7 @@ Here are some basic instructions:
 
 -  `str`/`ldr` - store and load register. Basically stores and loads a register from the given pointer.
     ```
-    str x0, [x29]; store x10 at the address in x29
+    str x0, [x29]; store x0 at the address in x29
     ldr x0, [x29]; load the value from the address in x29 into x0
     ```
     - `stp`/`ldp` - store and load a pair of registers. Same as `str`/`ldr` but instead with a pair of registers
