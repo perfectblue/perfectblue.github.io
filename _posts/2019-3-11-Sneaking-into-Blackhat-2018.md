@@ -5,7 +5,7 @@ layout: post
 description: MacGuyvering a (very shoddy) Black Hat 2018 badge forgery
 ---
 
-With DEFCON qualifiers  coming up again, I ([cts](https://github.com/rollsafe)) thought I'd share me and [Jazzy](https://twitter.com/ret2got)'s experience at Las Vegas last year.
+With DEFCON qualifiers  coming up again, I ([cts](https://github.com/rollsafe)) thought I'd share me and [Jazzy](https://twitter.com/ret2jazzy)'s experience at Las Vegas last year.
 
 Though we missed qualifying for DEFCON finals (by 1 place!), we were nevertheless generously invited by Hackerone to their h1-702 event, and luckily for us Black Hat 2018 and DEFCON happened to coincide!
 

@@ -9,7 +9,7 @@ This is walkthrough of how we managed to ROP on Aarch64, coming from a completel
 
 The [nyanc](https://github.com/perfectblue/ctf-writeups/tree/master/insomnihack-teaser-2019/nyanc) challenge from the Insomni'hack teaser 2019 was the final push we needed to start learning about arm exploitation, with its lucrative heap-note interface.
 
-Overall, me ([Jazzy](https://twitter.com/ret2got)) and [VoidMercy](https://twitter.com/_voidmercy) spent about 24 hrs on this challenge and still didn't manage to solve it in time, but the whole experience was worth it.
+Overall, me ([Jazzy](https://twitter.com/ret2jazzy)) and [VoidMercy](https://twitter.com/_voidmercy) spent about 24 hrs on this challenge and still didn't manage to solve it in time, but the whole experience was worth it.
 
 As neither of us had any experience in exploiting Aarch64 and we couldn't find a lot of documentation on how it is done, the methods and techniques we used are probably not be the best ones, but we learned a lot along the way.
 
@@ -329,7 +329,7 @@ Now that we have full control over x0, x1 and x2, we just need to put it all tog
 
 And that's a wrap folks, you can find our final exploit [here](https://github.com/perfectblue/ctf-writeups/blob/master/insomnihack-teaser-2019/nyanc/sol.py)
 
-\- [Jazzy](https://twitter.com/ret2got)
+\- [Jazzy](https://twitter.com/ret2jazzy)
 
 
 
