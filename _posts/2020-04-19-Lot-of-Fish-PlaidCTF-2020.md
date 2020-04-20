@@ -365,7 +365,7 @@ assert(hash == 0x470)
 assert(len(set(inp[:16])) == 16) # distinct
 ```
 
-So, we're essentially asked to find a permutation of table1 and table2 that results in the absolute differences of the consecutive elements summing to 0x470. This can be reframed as [finding a Hamiltonian cycle](https://en.wikipedia.org/wiki/Hamiltonian_path_problem) of given length, where the metric is Manhattan distance! Luckily, we can use dynamic programming to solve this, but I'm not the best at algorithms. Thankfully sampriti saved me with his sick competitive programming skillz using bitmasks.
+So, we're essentially asked to find a permutation of (xs, ys) that results in the absolute differences of the consecutive elements summing to 0x470. This can be reframed as [finding a Hamiltonian cycle](https://en.wikipedia.org/wiki/Hamiltonian_path_problem) of given length, where the metric is Manhattan distance! Luckily, we can use dynamic programming to solve this, but I'm not the best at algorithms. Thankfully sampriti saved me with his sick competitive programming skillz using bitmasks.
 
 His solver gave `[0,9,15,2,1,4,3,8,10,5,13,11,14,6,7,12,0]`, and this worked in our VM emulator too! The VM halted with code `0`, which is correct. Now all we have to do is convert it to the input format the program wants, and run it!
 
