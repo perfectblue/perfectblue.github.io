@@ -320,7 +320,7 @@ type WriteHeaps<S extends VMState, x extends BinNum, y extends TNode | undefined
 0xf Ret
 ```
 
-Right, so `Tuna` is an adder, and `Swordfish` is a register file...what? Anyways, one interesting this is that there are instructions for manipulating a heap. I was really confused about the fancy heap implementation, so I ended up just looking at the table of popular heaps on Wikipedia. 
+Right, so `Tuna` is an adder, and `Swordfish` is a register file...what? Anyways, one interesting thing is that there are instructions for manipulating a heap. I was really confused about the fancy heap implementation, so I ended up just looking at the table of popular heaps on Wikipedia. 
 
 ![oh no]({{ "assets/files/plaidctf/heapslol.png" }})
 
@@ -341,7 +341,7 @@ function Main<Input>(input: Input & (WriteObj<Input> extends infer WInput ?
 }
 ```
 
-Essentially, this crazy VM is **used a a type constraint on our input**! Meaning, the *type system, not the interpreted code*, will check our input! It initializes a VM state using our input, then applies StepVM until the VM halts and returns a scalar. This scalar is the VM's exit code (halt state) and is asserted to be zero. And that big array of binary digits we saw in the beginning is actually the VM's bytecode. In any case, let's dig into the VM, shall we? We wrote a disassembler, emulator, and debugger for the custom architecture and started reversing.
+Essentially, this crazy VM is **used as a type constraint on our input**! Meaning, the *type system, not the interpreted code*, will check our input! It initializes a VM state using our input, then applies StepVM until the VM halts and returns a scalar. This scalar is the VM's exit code (halt state) and is asserted to be zero. And that big array of binary digits we saw in the beginning is actually the VM's bytecode. In any case, let's dig into the VM, shall we? We wrote a disassembler, emulator, and debugger for the custom architecture and started reversing.
 
 Here's the control flow graph of the VM's main function, from a Binary Ninja [plugin](https://github.com/hgarrereyn/bn-fish-disassembler) Harrison Green wrote:
 
