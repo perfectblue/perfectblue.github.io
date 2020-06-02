@@ -1,6 +1,6 @@
 ---
 title: Hack-A-Sat CTF 2020 - Launch Link
-date: 2020-06-01 23:27:49
+date: 2020-05-28 23:27:49
 description: Writeup for Launch Link from Hack-A-Sat qualifiers, a Data Link Layer Protocol Firmware Reversing and Exploitation challenge 
 ---
 
@@ -56,9 +56,9 @@ Like IDA, when loading a binary, you must select the processor architecture and 
 puVar4 = (undefined4 *)&DAT_bfc08ef8; // 0xbfc08ef8 - Src buffer
 puVar7 = &_gp_1; // 0xa0180000 - Destination buffer
 do {
-	  *puVar7 = *puVar4;
-		  puVar4 = puVar4 + 1;
-			  puVar7 = puVar7 + 1;
+  *puVar7 = *puVar4;
+  puVar4 = puVar4 + 1;
+  puVar7 = puVar7 + 1;
 } while (puVar4 != (undefined4 *)0xbfc09c8c); // Copy loop
 uVar9 = 0xbfc00510;
 main_logic(); // Main func
@@ -107,41 +107,41 @@ After a hefty 20 or so hours of staring at Ghidra, we understood the code in ful
 
 ```c
 void main_logic(void) {
-	  msg_node **str2_00;
-		  char local_1300 [4120];
-			  mac_struct important1;
-				  radio_link_struct important2;
-					  pdu_struct important3;
-						  msg_node *str5;
-							  msg_node *str4;
-								  msg_node *str3;
-									  msg_node *str2;
-										  msg_node *str1;
-											  
-												  // Global data initialization
-													  FUN_bfc08ba8(local_1300);
-														  communication_buffer = local_1300;
-															  init_prng();
-																  //set debug prints to 0, more explanation in the debugging section
-																	  set_debug(0);
-																		  // Initializing communication linked lists
-																			  create_head((msg_node *)&str1,s_UL:_MACRLL_a0180d3c);
-																				  create_head((msg_node *)&str2,s_UL:_RLLRRL_a0180d48);
-																					  create_head((msg_node *)&str3,s_DL:_RRLRLL_a0180d54);
-																						  create_head((msg_node *)&str4,s_DL:_RLLMAC_a0180d60);
-																							  create_head((msg_node *)&str5,s_GLOBAL_a0180d6c);
-																								  // Initialize MAC Layer, Radio Link Layer, Radio Resource Control Layer structs
-																									  make_struct(&important1,&str1,&str4,(msg_node *)&str5,communication_buffer);
-																										  make_struct2(&important2,&str1,&str2,&str4,(msg_node *)&str3,(msg_node *)&str5);
-																											  str2_00 = &str2;
-																												  make_struct3(&important3,str2_00,(msg_node *)&str3,(msg_node *)&str5);
-																													  setup_timer1(&important1,str2_00,0,0);
-																														  setup_timer2(&important2,str2_00,0,0);
-																															  do {
-																																	    mac_receive(&important1); // MAC Processing
-																																			    radio_link_layer(&important2); // Radio Link Layer
-																																					    process_resource(&important3); // Radio Resource Control Layer
-																																							  } while( true );
+  msg_node **str2_00;
+  char local_1300 [4120];
+  mac_struct important1;
+  radio_link_struct important2;
+  pdu_struct important3;
+  msg_node *str5;
+  msg_node *str4;
+  msg_node *str3;
+  msg_node *str2;
+  msg_node *str1;
+  
+  // Global data initialization
+  FUN_bfc08ba8(local_1300);
+  communication_buffer = local_1300;
+  init_prng();
+  //set debug prints to 0, more explanation in the debugging section
+  set_debug(0);
+  // Initializing communication linked lists
+  create_head((msg_node *)&str1,s_UL:_MACRLL_a0180d3c);
+  create_head((msg_node *)&str2,s_UL:_RLLRRL_a0180d48);
+  create_head((msg_node *)&str3,s_DL:_RRLRLL_a0180d54);
+  create_head((msg_node *)&str4,s_DL:_RLLMAC_a0180d60);
+  create_head((msg_node *)&str5,s_GLOBAL_a0180d6c);
+  // Initialize MAC Layer, Radio Link Layer, Radio Resource Control Layer structs
+  make_struct(&important1,&str1,&str4,(msg_node *)&str5,communication_buffer);
+  make_struct2(&important2,&str1,&str2,&str4,(msg_node *)&str3,(msg_node *)&str5);
+  str2_00 = &str2;
+  make_struct3(&important3,str2_00,(msg_node *)&str3,(msg_node *)&str5);
+  setup_timer1(&important1,str2_00,0,0);
+  setup_timer2(&important2,str2_00,0,0);
+  do {
+    mac_receive(&important1); // MAC Processing
+    radio_link_layer(&important2); // Radio Link Layer
+    process_resource(&important3); // Radio Resource Control Layer
+  } while( true );
 }
 ```
 
@@ -178,29 +178,29 @@ The Radio Link Layer takes these packets, merges them, then applies the XTEA XOR
 ```c
 undefined4
 copy_data(pdu_data_packet *pdu_data_struct,char* dest,uint max_length,undefined2 *size_of_dec) {
-	  uint sig;
-		  undefined4 uVar1;
-			  char *curchar;
-				  char **buf_ptr;
-					  int size;
-						  
-							  sig = get_signature(pdu_data_struct);
-								  uVar1 = 0;
-									  if (sig <= max_length) { // Faulty check for length
-											    buf_ptr = pdu_data_struct->buf_start;
-													    size = 0;
-															    do {
-																		      curchar = *buf_ptr;
-																					      if (curchar != 0x0) {
-																									        memcpy(&dest[size], *(char **)curchar, (uint) curchar[4]); // Copy data into stack buffer
-																													        size = size + (uint) (*buf_ptr)[4]; // Size is not bounds checked
-																																	      }
-																																				      buf_ptr = buf_ptr + 1;
-																																							      uVar1 = 1;
-																																										    } while (buf_ptr != (char **)&pdu_data_struct->sn_num); // Iterate through each separate packet
-																																												    *size_of_dec = (short)size;
-																																														  }
-																																															  return uVar1;
+  uint sig;
+  undefined4 uVar1;
+  char *curchar;
+  char **buf_ptr;
+  int size;
+  
+  sig = get_signature(pdu_data_struct);
+  uVar1 = 0;
+  if (sig <= max_length) { // Faulty check for length
+    buf_ptr = pdu_data_struct->buf_start;
+    size = 0;
+    do {
+      curchar = *buf_ptr;
+      if (curchar != 0x0) {
+        memcpy(&dest[size], *(char **)curchar, (uint) curchar[4]); // Copy data into stack buffer
+        size = size + (uint) (*buf_ptr)[4]; // Size is not bounds checked
+      }
+      buf_ptr = buf_ptr + 1;
+      uVar1 = 1;
+    } while (buf_ptr != (char **)&pdu_data_struct->sn_num); // Iterate through each separate packet
+    *size_of_dec = (short)size;
+  }
+  return uVar1;
 }
 ```
 
@@ -212,23 +212,23 @@ Remember the `debug_print` function shown at the start? It was being called mult
 
 ```c
 int debug_print(int fd,undefined *fmt,...) {
-	  undefined4 in_a2;
-		  undefined4 in_a3;
-			  int iVar1;
-				  undefined4 local_res8;
-					  undefined4 local_resc;
-						  char acStack1040 [1024];
-							  undefined4 *local_10;
-								  
-									  local_10 = &local_res8;
-										  iVar1 = 0;
-											  if ((fd & X_global_var) != 0) { // Global debug flag
-													    local_res8 = in_a2;
-															    local_resc = in_a3;
-																	    iVar1 = __vsnprintf_internal(acStack1040);
-																			    printf2(s_DEBUG::%s_a0180418,acStack1040); // Do debug print
-																					  }
-																						  return iVar1;
+  undefined4 in_a2;
+  undefined4 in_a3;
+  int iVar1;
+  undefined4 local_res8;
+  undefined4 local_resc;
+  char acStack1040 [1024];
+  undefined4 *local_10;
+  
+  local_10 = &local_res8;
+  iVar1 = 0;
+  if ((fd & X_global_var) != 0) { // Global debug flag
+    local_res8 = in_a2;
+    local_resc = in_a3;
+    iVar1 = __vsnprintf_internal(acStack1040);
+    printf2(s_DEBUG::%s_a0180418,acStack1040); // Do debug print
+  }
+  return iVar1;
 }
 ```
 
@@ -262,22 +262,22 @@ Looking into the vmips source code, the `CPU::open_trace_file()` was broken.
 void
 CPU::open_trace_file ()
 {
-	  char tracefilename[80];
-		  for (unsigned i = 0; ; ++i) {
-				    sprintf (tracefilename, "traceout%d.txt", i);
-						    if (!can_read_file (tracefilename))
-									      break;
-												  }
-													  traceout = fopen (tracefilename, "w");
+  char tracefilename[80];
+  for (unsigned i = 0; ; ++i) {
+    sprintf (tracefilename, "traceout%d.txt", i);
+    if (!can_read_file (tracefilename))
+      break;
+  }
+  traceout = fopen (tracefilename, "w");
 }
 
 bool can_read_file (char *filename) {
-	  assert (filename && "Null pointer passed to can_read_file ()");
-		  FILE *f = fopen (filename, "r");
-			  if (!f)
-					    return false;
-							  fclose (f);
-								  return true;
+  assert (filename && "Null pointer passed to can_read_file ()");
+  FILE *f = fopen (filename, "r");
+  if (!f)
+    return false;
+  fclose (f);
+  return true;
 }
 ```
 
