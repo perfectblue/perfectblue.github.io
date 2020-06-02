@@ -1,6 +1,6 @@
 ---
 title: Hack-A-Sat CTF 2020 - Launch Link
-date: 2020-05-28 23:27:49
+date: 2020-06-01 23:27:49
 description: Writeup for Launch Link from Hack-A-Sat qualifiers, a Data Link Layer Protocol Firmware Reversing and Exploitation challenge 
 ---
 
