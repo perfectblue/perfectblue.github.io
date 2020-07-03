@@ -704,4 +704,4 @@ Sandbox - Escaped.
 
 I expected some classic JIT bugs, so I was really surprised that i had to do something different in the browser. I think it was a great opportunity to learn `PartitionAlloc` and I hope for more CTFs like this one.
 
-The full exploit code is located [here](https://github.com/perfectblue/ctf-writeups/blob/master/2020/0CTF/Chromium%20Fullchain/pwning.html)
+The full exploit code is located [here](https://github.com/perfectblue/ctf-writeups/blob/master/2020/0CTF-quals/Chromium%20Fullchain/pwning.html)
