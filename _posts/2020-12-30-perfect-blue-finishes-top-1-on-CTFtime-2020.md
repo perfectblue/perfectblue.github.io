@@ -79,7 +79,7 @@ COVID affected nearly all aspects of life, CTFs included. Being stuck inside suc
 
 ![](/assets/images/Retrospective2020/D1g95HS.png)
 
-As you can tell, we were grinding pretty much every weekend. Regretabbly, despite the stellar performance, COVID cancelled all the free travel 😔
+As you can tell, we were grinding pretty much every weekend. Regrettably, despite the stellar performance, COVID cancelled all the free travel 😔
 
 ![](/assets/images/Retrospective2020/GedQ4v3.png)
 
