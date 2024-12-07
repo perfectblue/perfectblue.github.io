@@ -6,7 +6,7 @@ description: "A walkthrough of the "SpongeBox" sandbox escape challenge from Blu
 date: 2024-12-07 13:37:31
 
 ---
-Author: Jonathan Jacobi ([@j0nathanj](https://x.com/j0nathanj)) 
+*Author: Jonathan Jacobi ([@j0nathanj](https://x.com/j0nathanj))*.
 
 SpongeBox was a Linux-based sandbox escape challenge for Blue Water CTF 2024. The original motivation for this challenge was actually based on an old Linux kernel vulnerability and some interesting behaviors, which ended up as a really nice CTF challenge!
 
@@ -179,7 +179,7 @@ Clearly there are a few more interesting things here as well:
 
 Given those 2 primitives, we can only wonder - can we get the `write()` to the `uid_map` to fail, and somehow leak an FD to a yet-to-be-written `uid_map`? Why does this even help us...?
 
-#### 🛑 Stop: A Linux Kernel History Lesson!
+#### 🛑 A Linux Kernel History Lesson!
 A very intereting observation about the `uid_map` is that different users can write different contents to the file, but everyone can open it.
 
 This is somewhat unusual, as we're used to either being able to write to a file, or not - based on the file's permissions. We're less used to permission checks conducted upon `write()`.
@@ -205,7 +205,7 @@ So if you recall, we were wondering if it would even be interesting to leak the 
 
 The next logical question is... can we leak the `uid_map` fd?
 
-#### 💡 **Primitive #4**: Leaking the FD!!!
+#### 💡 **Primitive #4**: Leaking the FD!
 Well, we need to get the `write()` to fail, as writing to the `uid_map` is allowed only once (that makes sense too, the kernel devs don't want race conditions around ids...).
 
 Let's take a look at how the `write()` handler for `uid_map` is implemented in the Linux Kernel source code.
