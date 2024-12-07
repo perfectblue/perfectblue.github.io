@@ -1,13 +1,17 @@
 ---
-title: SpongeBox - Bringing Linux Logical Vulnerabilities Back To Life - BlueWater CTF 2024
+
+title: SpongeBox: Bringing Linux Logical Vulnerabilities Back To Life - BlueWater CTF 2024
 layout: post
 description: A walkthrough of the "SpongeBox" sandbox escape challenge from Blue Water CTF 2024 
+
 ---
-> Author: Jonathan Jacobi ([@j0nathanj](https://x.com/j0nathanj)) 
+Author: Jonathan Jacobi ([@j0nathanj](https://x.com/j0nathanj)) 
 
 SpongeBox was a Linux-based sandbox escape challenge for Blue Water CTF 2024. The original motivation for this challenge was actually based on an old Linux kernel vulnerability and some interesting behaviors, which ended up as a really nice CTF challenge!
 
 There is a `/flag` file that is readable only by root. The challenge runs as root initially.
+
+The relevant files for the challenge can be found [here](https://github.com/BlueWaterCTF/bwctf-2024-challs/tree/main/pwn/SpongeBox) (SpongeBob.tar.gz was handed out).
 
 ## The Challenge 
 The layout of the challenge is pretty simple: a server (written in C) that listens for connections and supports 3 possible commands:
