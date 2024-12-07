@@ -341,6 +341,8 @@ Summarizing it all together, the attack would look like this:
 9. From the first sandboxee, just read the flag file, and using `CMD_COMMUNICATE` leak it outside.
 10. Profit :)
 
+The full exploit can be found [here](https://github.com/BlueWaterCTF/bwctf-2024-challs/tree/main/pwn/SpongeBox/solution) - it is composed of a Python script that interacts with the server, two `c` files and the binaries built from them, that are used as the sandoxees.
+
 ## Summary 🏁
 I really enjoyed writing this challenge, especially as it involved chaining multiple logical issues together into something that is not so trivial to think of.
 
