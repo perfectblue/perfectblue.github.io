@@ -2,7 +2,7 @@
 
 title: "SpongeBox - Bringing Linux Logical Vulnerabilities Back To Life - BlueWater CTF 2024"
 layout: post
-description: "A walkthrough of the "SpongeBox" sandbox escape challenge from Blue Water CTF 2024" 
+description: "A walkthrough of \"SpongeBox\" - a Linux-based sandbox escape challenge from Blue Water CTF 2024" 
 date: 2024-12-07 13:37:31
 
 ---
