@@ -143,9 +143,9 @@ void become_user_group(uid_t uid, gid_t gid) {
 ```
 
 #### 💡 **Primitive #1**: Lack of return value check of `setresuid()` and `setresgid()` 
-Those 2 function calls do not check any return values. Meaning, if the set-logic does not work, well.. nothing too special will happen. 
+Those 2 function calls do not check any return values. Meaning, if the set-logic does not work, well.. nothing too special happens. 
 
-It's not very interesting on its own here, but let's keep that in the back of our minds. It will be useful later.
+This behavior is not very interesting on its own, but let's keep that in the back of our minds. It will be useful later.
 
 #### Sandbox creation - `setup_idmaps()`
 The other interesting function to examine is `setup_idmaps()`, responsible for mapping the `uid` and `gid` provided, into the newly created user namespace.
