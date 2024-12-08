@@ -8,11 +8,13 @@ date: 2024-12-07 13:37:31
 ---
 *Author: Jonathan Jacobi ([@j0nathanj](https://x.com/j0nathanj))*.
 
-SpongeBox is a Linux-based sandbox escape challenge from Blue Water CTF 2024. The original motivation for this challenge was actually based on an old Linux kernel vulnerability and some interesting behaviors, which together ended up as a really nice CTF challenge!
+SpongeBox is a Linux-based sandbox escape challenge from Blue Water CTF 2024. 
+
+The original motivation for this challenge were actually some old Linux kernel vulnerabilities and interesting behaviors around them - which together ended up as a really nice CTF challenge.
 
 The relevant files for the challenge can be found [here](https://github.com/BlueWaterCTF/bwctf-2024-challs/tree/main/pwn/SpongeBox) (SpongeBob.tar.gz was handed out).
 
-There is a `/flag` file that is readable only by root. The challenge runs as root initially.
+There is a `/flag` file that is readable only by root. The challenge is initially spawned as root.
 
 ## The Challenge 
 The layout of the challenge is pretty simple: a server (written in C) that listens for connections and supports 3 possible commands:
