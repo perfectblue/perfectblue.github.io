@@ -8,11 +8,11 @@ date: 2024-12-07 13:37:31
 ---
 *Author: Jonathan Jacobi ([@j0nathanj](https://x.com/j0nathanj))*.
 
-SpongeBox was a Linux-based sandbox escape challenge for Blue Water CTF 2024. The original motivation for this challenge was actually based on an old Linux kernel vulnerability and some interesting behaviors, which ended up as a really nice CTF challenge!
-
-There is a `/flag` file that is readable only by root. The challenge runs as root initially.
+SpongeBox is a Linux-based sandbox escape challenge from Blue Water CTF 2024. The original motivation for this challenge was actually based on an old Linux kernel vulnerability and some interesting behaviors, which together ended up as a really nice CTF challenge!
 
 The relevant files for the challenge can be found [here](https://github.com/BlueWaterCTF/bwctf-2024-challs/tree/main/pwn/SpongeBox) (SpongeBob.tar.gz was handed out).
+
+There is a `/flag` file that is readable only by root. The challenge runs as root initially.
 
 ## The Challenge 
 The layout of the challenge is pretty simple: a server (written in C) that listens for connections and supports 3 possible commands:
@@ -23,13 +23,13 @@ The layout of the challenge is pretty simple: a server (written in C) that liste
 
 3. **Communicating with the sandbox**: This will `write()` into the `stdin` FD of the Sandboxee to allow this data to be read inside the Sandbox. It will also `read()` data from the `stdout` that was set up for the Sandboxee and send back the result.
 
-This whole behavior essentially mimics the ability to set up a sandbox, run a binary in it, communicate with it, and get the results.
+This whole behavior essentially mimics the ability to set up a sandbox, run a binary inside of it, communicate with it, and get the results.
 
 
 ### 1. `CMD_CREATE` - Creating a Sandbox 🆕
-This function essentially to create a new sandboxed process, and receives the contents of an ELF file that will be executed from within the sandbox.
+This function creates a new sandboxed process, and receives the contents of an ELF file that will be executed from within the sandbox.
 
-The sandboxer creates a new sandboxee process, with all new namespaces. The sandbox creation is done by a "weak" user (non-root).
+The sandboxer creates a new sandboxee process, with all possible new namespaces. The sandbox creation is done by a "weak" user (non-root).
 
 The sandbox creation also creates a `socketpair()` and shares it with the sandboxee, to be able to sync with it. Specifically, to allow the sandboxer to FIRST map the uid & gid of the new user namespace, before the sandboxee tries to `setuid()`.
 
@@ -65,7 +65,7 @@ void drop_privileges(void) {
 }
 ```
 
-And, the synchronization of with the child for the mapping purposes, as can be seen:
+And, there's additional synchronization with the child for the mapping purposes, as can be seen:
 ```c
 int create_sandbox(sandbox_args_t *args) {
     // ... 
@@ -88,10 +88,12 @@ int create_sandbox(sandbox_args_t *args) {
 }
 ```
 
-An interesting thing to note here, is that both the `uid` and the `gid` that used as the inner `uid` and `gid` inside the sandbox - are strings (yes, verified properly to be all digits...) controlled remotely. This in itself is not a security issue, as those are the ids inside the sandbox - and they can be arbitrary values.
+An interesting thing to note here, is that both the `uid` and the `gid` that are used as the inner `uid` and `gid` inside the sandbox - are strings (yes, verified properly to be all digits...) controlled remotely.
+
+This in itself is not a security issue, as those are the ids inside the sandbox - and they can be arbitrary values.
 
 #### Sandbox creation - `run_sandbox()`
-This function is the entry point for the sandboxee. It essentially sets up the sandbox, and then `execveat()`-s the ELF memfd created.
+This function is the entry point for the sandboxee. It essentially sets up the sandbox, and then `execveat()`-s the ELF memfd created earlier.
 ```c
 void run_sandbox(sandbox_args_t *args) {
     // Close the parent's end of the sync socket
@@ -106,7 +108,7 @@ void run_sandbox(sandbox_args_t *args) {
 }
 ```
 
-The `setup_sandbox()` logic is also pretty simple. Simply calls `setresgid()` and `setresuid()` for the inner-uids, after it receives the signal from the sandboxer that the uid and the gid are mapped. 
+The `setup_sandbox()` logic is also pretty simple. Simply calls `setresgid()` and `setresuid()` for the inner-uids, after it receives the signal from the sandboxer that the uid and the gid are now mapped. 
 
 Let's take a look at it:
 ```c
@@ -129,7 +131,7 @@ static int setup_sandbox(char *uid, char *gid) {
 }
 ```
 
-And, the `become_user_group`, also pretty simple:
+And, the `become_user_group` function, is also pretty simple:
 ```c
 void become_user_group(uid_t uid, gid_t gid) {
     // Switch to the newly mapped user and group
@@ -139,12 +141,12 @@ void become_user_group(uid_t uid, gid_t gid) {
 ```
 
 #### 💡 **Primitive #1**: Lack of return value check of `setresuid()` and `setresgid()` 
-Those 2 function calls do not check any return values. Meaning if the set does not work, well.. nothing too special will happen. 
+Those 2 function calls do not check any return values. Meaning, if the set-logic does not work, well.. nothing too special will happen. 
 
-It's not very interesting on its own here, but let's keep that in the back of our minds!
+It's not very interesting on its own here, but let's keep that in the back of our minds. It will be useful later.
 
 #### Sandbox creation - `setup_idmaps()`
-The other interesting function to examine is the `setup_idmaps()` function, responsible for mapping the `uid` and `gid` provided, into the newly created user namespace.
+The other interesting function to examine is `setup_idmaps()`, responsible for mapping the `uid` and `gid` provided, into the newly created user namespace.
 
 The supplied `uid` and `gid` parameters are controlled remotely, and those are the IDs inside the sandbox.
 
@@ -175,9 +177,9 @@ void setup_idmaps(pid_t pid, char *uid, char *gid) {
 #### 💡 Primitives #2 + #3: UID/GID Maps setups trickeries
 Clearly there are a few more interesting things here as well:
 1. 💡 **Primitive #2**: No return value checks for writing to the uid and gid maps.
-2. 💡 **Primitive #3**: The `uid_map` and `gid_map` fds are left open and leaked. In most cases this is not useful, as writing to `uid_map` and `gid_map` is possible only once (🤔)
+2. 💡 **Primitive #3**: The `uid_map` and `gid_map` FDs are left open and leaked. In most cases this is not useful, as writing to `uid_map` and `gid_map` is possible only once (A kernel-level check).
 
-Given those 2 primitives, we can only wonder - can we get the `write()` to the `uid_map` to fail, and somehow leak an FD to a yet-to-be-written `uid_map`? Why does this even help us...?
+Given those 2 primitives, one can wonder - can we get the `write()` to the `uid_map` to fail, and somehow leak an FD to a yet-to-be-written `uid_map`? Why does this even help us?
 
 #### 🛑 A Linux Kernel History Lesson!
 A very intereting observation about the `uid_map` is that different users can write different contents to the file, but everyone can open it.
@@ -188,22 +190,22 @@ The case of `uid_map` is that there IS a check upon `write()`, and it allows dif
 
 An interesting question comes up - what if we `open()` the `uid_map` and inherit it as an `stdout`/`stderr` FD to a privileged process? For example - by `execve()`-ing a suid binary?
 
-Specifically, we can exec `sudo` and also change `argv[0]` to be an arbitrary content, and if we fail with the password we can cause a partially controlled `write()` to that FD, by a privileged process! 
-* It usually writes `sudo: 3 incorrect password attempts` or something like that. `sudo` is actually `argv[0]` - so if we change that, we have a partially controlled `write()`.
+Specifically, we can exec `sudo` and also change `argv[0]` to be an arbitrary content, and if we fail with an incorrect password we can cause a partially controlled `write()` to that FD, by a privileged process! 
+* It usually writes `sudo: 3 incorrect password attempts` or something around that. `sudo` is actually `argv[0]` - so if we change that, we have a partially controlled `write()`.
 
 We can make that a more precise write, by coming up with creative primitives like `ulimit()`-s. But you get the idea...
 
-So is that going to work???
+So is that going to work...?
 
 #### Almost... but more permission checks 😔
 Turns out that for a short while, this was an actual [vulnerability](https://github.com/torvalds/linux/commit/6708075f104c3c9b04b23336bb0366ca30c3931b)!
 
-The way the solved it is by ALSO recording the permissions of the OPENER of the file - and during the `write()` there is a check that verifies that both the opener and the writer have the write permissions (`CAP_SYS_ADMIN` in the target user namespace).
+The way the kernel deverloeprs solved it is by ALSO recording the permissions of the OPENER of the file - and during the `write()` there is a check that verifies that both the opener and the writer have the correct permissions (`CAP_SYS_ADMIN` in the target user namespace).
 
 #### ⏩ Going back to the challenge: Leaking the `uid_map` fd
 So if you recall, we were wondering if it would even be interesting to leak the `uid_map` FD - and we just found out that IT IS INTERESTING, and that is because the OPENER of the `uid_map` in `setup_idmaps()` is a privileged (root) process!
 
-The next logical question is... can we leak the `uid_map` fd?
+The next logical question is... can we even leak the `uid_map` fd?
 
 #### 💡 **Primitive #4**: Leaking the FD!
 Well, we need to get the `write()` to fail, as writing to the `uid_map` is allowed only once (that makes sense too, the kernel devs don't want race conditions around ids...).
@@ -231,17 +233,17 @@ static ssize_t map_write(struct file *file, const char __user *buf,
 		goto out;
 ```
 
-Straight off the bat we notice the check that allows for only 1 successful write to `uid_map`.
+We immediately notice the check that allows for only 1 successful write to `uid_map`.
 
 We also immediately see a **FAIL FAST** check in the beginning - that requires:
 1. The `write()` to not be `lseek()`-ed before (the check with `ppos`).
 2. The amount of bytes that are going to be written to the `uid_map` to be less than `PAGE_SIZE` (4096).
 
-Well, we can't cause an `lseek()` - but... remember we remotely control the `uid` (as a string!!!) of the inner user namespace? 
+Well, we can't cause an `lseek()` - but... remember we remotely control the `uid` (as a string!) of the inner user namespace? 
 
-#### 💡 **Primitive #5**: Leaking a high-permission `open()` & no `write()` FD to a `uid_map`
+#### 💡 **Primitive #5**: Leaking a privileged `open()`-ed & non `write()`-ten FD to a `uid_map`
 
-Combining those points together, we can come up with the following insight!
+Combining those points together, we can come up with the following idea!
 
 The handler for `CMD_CREATE` indeed checks the `uid` is a digit-only string, but it can also be up to `4096` (`MAX_STRING_SIZE`) bytes long, which means that together as a whole -- the string written to the `uid_map` is longer than 4096 bytes, and we can make `write()` fail! 
 
@@ -267,7 +269,7 @@ This is how the handler looks like in `main()`:
                 }
 ```                
 
-Can clearly be seen that we can pass up to `MAX_STRING_SIZE` digits, which is more than enough!
+It can clearly be seen that we can pass up to `MAX_STRING_SIZE` digits, which is more than enough!
 
 ### 📋 Primitives so far!
 Using primitive #2, #3 and #4 - we can finally achieve #5, which is:
@@ -277,10 +279,10 @@ Also utilizing primtiive #1 - it means that the `setresuid()` and `setresgid()` 
 
 It will fail because the mapping did not ACTUALLY take place, so changing to an inner UID will not work as it is not mapped. BUT this is not going to make any difference as the retun value is ignored, as seen in primitive #1!
 
-This is enough from `CMD_CREATE`, but we definitely found some very interesting behaviors!
+This is enough from `CMD_CREATE`, but we definitely found some very interesting behaviors.
 
 ### 2. `CMD_CONNECT`: Connecting to the sandbox 🔗
-This logic is very simple. Simply grabbing the fd = 0 and fd = 1 of a sandboxee (based on a sandbox id), using `pidfd_getfd()` - and saving it in the struct that represents the sandbox. 
+This logic is very simple. Simply grabbing the `fd = 0` and `fd = 1` of a sandboxee (based on a sandbox id), using `pidfd_getfd()` - and saving it in the struct that represents the sandbox. 
 
 ```c
 int connect_sandbox(sandbox_t *sandbox) {
@@ -310,41 +312,53 @@ int connect_sandbox(sandbox_t *sandbox) {
     sandbox->stdout_fd = stdout_fd;
     // ... 
 ```
-Pretty simple stuff!
+Pretty simple stuff.
 
 #### 💡 **Primitive #6**: Actually receiving a leaked `uid_map` fd to a Sandboxee
 Once we leak an FD in the Sandboxer, we can create yet another Sandbox, and it will be spawned with a leaked `uid_map` fd as we descrbied above!
 
 ### 3. `CMD_COMMUNICATE` - Communicating with the sandbox 💬 
-This logic is also very trivial. Simply writing to the `stdin` that was grabbed in the `CMD_CONNECT` phase, and reading from `stdout` (yes, those are the right operations -- the `stdout` is actually where the sanboxee writes, so we're reading from it. And the other way around with `stdin`).
+This logic is also very trivial. Simply writing to the `stdin` FD that was grabbed in the `CMD_CONNECT` phase, and reading from `stdout` (yes, those are the right operations -- the `stdout` is actually where the sanboxee writes, so we're reading from it. And the other way around with `stdin`).
 
 #### 💡 **Primitive #7**: Writing to the `uid_map` from a privileged process!
 Recall that we managed to leak the `uid_map` fd to the sandboxee. Also, that same FD has not been written into, and it is `open()`-ed by root.
 
 Meaning, we just need to write to it from a privileged process, as seen before in the kernel checks.
 
-Given the fact that the sandboxer can "steal" `stdin` and `stdout` - the Sandboxcee can `dup2()` the leaked FD into the FD that the Sandboxer is going to steal and write into (`stdin`, fd == 0).
-This KEEPS the permissions of the opener to be the original opener, which is root. And it workws!
+Given the fact that the sandboxer can "steal" `stdin` and `stdout` - the Sandboxee can `dup2()` the **leaked FD** into the FD that the Sandboxer is going to steal & write into (`stdin`, fd == 0).
+
+This KEEPS the permissions of the opener to be the original opener (thanks to `pidfd_getfd()`), which is root.
+
+This works! We have an FD to a `uid_map`, that hasn't been written into yet, and is also opened by a privileged process + going to be written-into by a (controlled) privileged process.
 
 Now the only thing that's left is writing WHATEVER WE WANT into the `uid_map`, and that's going to be permitted!
 
 ## Chaining it all together! 🔗 💣
 Summarizing it all together, the attack would look like this:
 1. Create the first sandboxee + make the UID be `4095 * '0'` which will cause the `write()` to the `uid_map` to fail, and leak the FD in the sandboxer.
+
 2. The first sandboxee will execute our custom binary that will `sleep()` a bit :)
-3. Now create a second sandboxee. Make it legit.
-4. The second sandboxee has the `uid_map` of the first sandboxee mapped into it, as fd == 6 (leaked).
+
+3. Now create a second sandboxee. Make the creation work.
+
+4. The second sandboxee has the `uid_map` of the first sandboxee leaked into it, as fd == 6 (leaked).
+
 5. In the second sandboxee, `dup2()` the fd == 6 into fd == 0 (`stdin`).
-6. Call `CMD_CONNECT` with the second sandboxee, which will grab the `uid_map` fd into the sandboxer.
-7. Call `CMD_COMMUNICATE` with the second sandboxee, and write `'0 0 1'` to it, which will map the real UID == 0 into UID == 0 inside the FIRST SANDBOXEE.
-8. Inside the first sandboxee, we're privileged and we can `setuid(0)` which will give us a REAL ROOT PRIVILEGE. 
+
+6. Trigger `CMD_CONNECT` with the second sandboxee, which will grab the `uid_map` fd into the sandboxer.
+
+7. Call `CMD_COMMUNICATE` with the second sandboxee, and write `'0 0 1'` to it, which will map the real UID == 0 into UID == 0 inside the FIRST SANDBOXEE (thanks to the leaked FD).
+
+8. Inside the first sandboxee, we're now privileged and we can `setuid(0)` which will give us a REAL ROOT PRIVILEGE. 
+
 9. From the first sandboxee, just read the flag file, and using `CMD_COMMUNICATE` leak it outside.
+
 10. Profit :)
 
 The full exploit can be found [here](https://github.com/BlueWaterCTF/bwctf-2024-challs/tree/main/pwn/SpongeBox/solution) - it is composed of a Python script that interacts with the server, two `c` files and the binaries built from them, that are used as the sandoxees.
 
 ## Summary 🏁
-I really enjoyed writing this challenge, especially as it involved chaining multiple logical issues together into something that is not so trivial to think of.
+I had a lot of fun writing this challenge, especially as it involved chaining multiple logical issues together into something that is not so trivial to think of.
 
 I hope you enjoyed the walkthrough, and feel free to reach out to me on X [@j0nathanj](https://x.com/j0nathanj)!
 
