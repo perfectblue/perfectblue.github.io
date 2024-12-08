@@ -316,7 +316,7 @@ int connect_sandbox(sandbox_t *sandbox) {
 ```
 Pretty simple stuff.
 
-#### 💡 **Primitive #6**: Actually receiving a leaked `uid_map` fd to a Sandboxee
+#### 💡 **Primitive #6**: Actually receiving a leaked `uid_map` fd in a Sandboxee
 Once we leak an FD in the Sandboxer, we can create yet another Sandbox, and it will be spawned with a leaked `uid_map` fd as we descrbied above!
 
 ### 3. `CMD_COMMUNICATE` - Communicating with the sandbox 💬 
